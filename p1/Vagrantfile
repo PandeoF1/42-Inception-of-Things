@@ -1,0 +1,43 @@
+SERVER_NODE_NAME = "tnardS"
+SERVER_NODE_IP = "192.168.56.110"
+
+WORKER_NODE_NAME = "tnardSW"
+WORKER_NODE_IP = "192.168.56.111"
+
+MEM = "1024"
+CPUS = "1"
+BOX = "ubuntu/focal64"
+
+Vagrant.configure("2") do |config|
+  config.vm.box = BOX
+  config.vm.define "server" do |server|
+    server.vm.hostname = SERVER_NODE_NAME
+    server.vm.network "private_network", ip: SERVER_NODE_IP
+    server.vm.provider "virtualbox" do |vb|
+      vb.memory = MEM
+      vb.cpus = CPUS
+    end
+    server.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get update
+      sudo apt-get install -y apt-transport-https curl net-tools
+      curl -sfL https://get.k3s.io | K3S_NODE_NAME=#{SERVER_NODE_NAME} INSTALL_K3S_EXEC="server" sh -
+      sudo cat /var/lib/rancher/k3s/server/node-token > /vagrant/token
+    SHELL
+    server.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  end
+  config.vm.define "serverworker" do |serverworker|
+    serverworker.vm.hostname = WORKER_NODE_NAME
+    serverworker.vm.network "private_network", ip: WORKER_NODE_IP
+    serverworker.vm.synced_folder ".", "/vagrant", type: "virtualbox", owner: "vagrant", group: "vagrant"
+    serverworker.vm.provider "virtualbox" do |vb|
+      vb.memory = MEM
+      vb.cpus = CPUS
+    end
+    serverworker.vm.provision "shell", inline: <<-SHELL
+      export K3S_TOKEN=$(cat /vagrant/token)
+      sudo apt-get update
+      sudo apt-get install -y apt-transport-https curl net-tools
+      curl -sfL https://get.k3s.io | K3S_NODE_NAME=#{WORKER_NODE_NAME} K3S_URL=https://#{SERVER_NODE_IP}:6443 K3S_TOKEN=$K3S_TOKEN sh -
+    SHELL
+  end
+end
