@@ -4,7 +4,7 @@ SERVER_NODE_IP = "192.168.56.110"
 WORKER_NODE_NAME = "tnardSW"
 WORKER_NODE_IP = "192.168.56.111"
 
-MEM = "1024"
+MEM = "512"
 CPUS = "1"
 BOX = "ubuntu/focal64"
 

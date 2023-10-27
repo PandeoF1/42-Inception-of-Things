@@ -39,6 +39,9 @@ suspend:
 token:
 	rm -rf token
 
+clean: stop destroy token
+	rm -rf .vagrant
+
 re: destroy token up
 
 .PHONY: help up status server serverWorker stop destroy suspend token re restart
