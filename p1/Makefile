@@ -31,7 +31,7 @@ restart:
 	vagrant reload
 
 destroy:
-	vagrant destroy
+	vagrant destroy -f
 
 suspend:
 	vagrant suspend
