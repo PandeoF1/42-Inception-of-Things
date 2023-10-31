@@ -52,4 +52,4 @@ test:
 
 re: destroy token up
 
-.PHONY: help up status server serverWorker stop destroy suspend token re restart
+.PHONY: help up status server stop destroy suspend token re restart

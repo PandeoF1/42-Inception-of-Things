@@ -25,4 +25,4 @@ spec:
       volumes:
       - name: html-volume
         configMap:
-          name: app2-html
+          name: app2.com

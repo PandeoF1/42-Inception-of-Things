@@ -25,4 +25,4 @@ spec:
       volumes:
       - name: html-volume
         configMap:
-          name: app3-html
+          name: app3.com

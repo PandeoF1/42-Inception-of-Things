@@ -10,6 +10,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: app3-service
+            name: app3
             port:
               number: 80
