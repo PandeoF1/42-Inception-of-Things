@@ -3,7 +3,6 @@ help:
 	@echo " make up            Démarre les machines virtuelles"
 	@echo " make status        Affiche le statut des machines virtuelles"
 	@echo " make server        Connecte SSH à la machine virtuelle 'server'"
-	@echo " make serverWorker  Connecte SSH à la machine virtuelle 'serverWorker'"
 	@echo " make stop          Arrête les machines virtuelles"
 	@echo " make destroy       Supprime les machines virtuelles"
 	@echo " make suspend       Met les machines virtuelles en pause"
@@ -20,9 +19,6 @@ status:
 
 server:
 	vagrant ssh tnardS
-
-serverWorker:
-	vagrant ssh tnardSW
 
 stop:
 	vagrant halt
@@ -41,6 +37,18 @@ token:
 
 clean: stop destroy token
 	rm -rf .vagrant
+
+test:
+	@echo "Curl vers le serveur avec le header Host:app1.com"
+	@curl -H "Host:app1.com" 192.168.56.110 --silent | grep APP
+	@echo "Curl vers le serveur avec le header Host:app2.com"
+	@curl -H "Host:app2.com" 192.168.56.110 --silent | grep APP
+	@echo "Curl vers le serveur avec le header Host:app3.com"
+	@curl -H "Host:app3.com" 192.168.56.110 --silent | grep APP
+	@echo "Curl vers le serveur avec le header Host:random_host.com"
+	@curl -H "Host:random_host" 192.168.56.110 --silent | grep APP
+	@echo "Curl vers le serveur sans header"
+	@curl 192.168.56.110 --silent | grep APP
 
 re: destroy token up
 
