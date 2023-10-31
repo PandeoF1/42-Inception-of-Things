@@ -4,40 +4,55 @@ SERVER_NODE_IP = "192.168.56.110"
 WORKER_NODE_NAME = "tnardSW"
 WORKER_NODE_IP = "192.168.56.111"
 
-MEM = "512"
-CPUS = "1"
-BOX = "ubuntu/focal64"
+$DISABLE_FIREWALL_SCRIPT = <<-SHELL
+  sudo systemctl disable --now firewalld
+SHELL
+
+MEM = "1536"
+CPUS = "4"
+BOX = "centos/8"
+BOX_URL = "https://app.vagrantup.com/centos/boxes/8/versions/2011.0/providers/virtualbox.box"
 
 Vagrant.configure("2") do |config|
   config.vm.box = BOX
-  config.vm.define "server" do |server|
+	config.vm.box_url = BOX_URL 
+	config.vm.box_check_update = false
+  config.ssh.forward_agent = true
+	config.vm.provision "shell", inline: $DISABLE_FIREWALL_SCRIPT
+
+  config.vm.define SERVER_NODE_NAME do |server|
     server.vm.hostname = SERVER_NODE_NAME
     server.vm.network "private_network", ip: SERVER_NODE_IP
     server.vm.provider "virtualbox" do |vb|
       vb.memory = MEM
       vb.cpus = CPUS
     end
-    server.vm.provision "shell", inline: <<-SHELL
-      sudo apt-get update
-      sudo apt-get install -y apt-transport-https curl net-tools
-      curl -sfL https://get.k3s.io | K3S_NODE_NAME=#{SERVER_NODE_NAME} INSTALL_K3S_EXEC="server" sh -
-      sudo cat /var/lib/rancher/k3s/server/node-token > /vagrant/token
-    SHELL
     server.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+    server.vm.provision "shell", inline: <<-SHELL
+      export INSTALL_K3S_EXEC="server --write-kubeconfig-mode 644 --tls-san #{SERVER_NODE_NAME} --advertise-address=#{SERVER_NODE_IP} --node-ip=#{SERVER_NODE_IP} --bind-address=#{SERVER_NODE_IP}"
+      echo $INSTALL_K3S_EXEC
+      curl -sfL https://get.k3s.io | sh -
+      sudo yum install net-tools -y
+      echo "alias k='kubectl'" >> /home/vagrant/.bashrc
+      sudo cp /var/lib/rancher/k3s/server/node-token /vagrant/token
+    SHELL
   end
-  config.vm.define "serverworker" do |serverworker|
+
+  config.vm.define WORKER_NODE_NAME do |serverworker|
     serverworker.vm.hostname = WORKER_NODE_NAME
     serverworker.vm.network "private_network", ip: WORKER_NODE_IP
-    serverworker.vm.synced_folder ".", "/vagrant", type: "virtualbox", owner: "vagrant", group: "vagrant"
     serverworker.vm.provider "virtualbox" do |vb|
       vb.memory = MEM
       vb.cpus = CPUS
     end
+    serverworker.vm.synced_folder ".", "/vagrant", type: "virtualbox"
     serverworker.vm.provision "shell", inline: <<-SHELL
-      export K3S_TOKEN=$(cat /vagrant/token)
-      sudo apt-get update
-      sudo apt-get install -y apt-transport-https curl net-tools
-      curl -sfL https://get.k3s.io | K3S_NODE_NAME=#{WORKER_NODE_NAME} K3S_URL=https://#{SERVER_NODE_IP}:6443 K3S_TOKEN=$K3S_TOKEN sh -
+      cat /vagrant/token
+      export INSTALL_K3S_EXEC="agent --server https://#{SERVER_NODE_IP}:6443 --token-file /vagrant/token --node-ip=#{WORKER_NODE_IP}"
+      curl -sfL https://get.k3s.io | sh -
+      sudo yum install net-tools -y
+      echo "alias k='kubectl'" >> /home/vagrant/.bashrc
     SHELL
+
   end
 end

@@ -19,10 +19,10 @@ status:
 	vagrant status
 
 server:
-	vagrant ssh server
+	vagrant ssh tnardS
 
 serverWorker:
-	vagrant ssh serverworker
+	vagrant ssh tnardSW
 
 stop:
 	vagrant halt
