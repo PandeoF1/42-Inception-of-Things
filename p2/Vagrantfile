@@ -13,8 +13,7 @@ SERVER_NODE_IP = "192.168.56.110"
 MEM = "2048"
 CPUS = "4" # (For 42 computers use only 1)
 
-BOX = "centos/8"
-BOX_URL = "https://app.vagrantup.com/centos/boxes/8/versions/2011.0/providers/virtualbox.box"
+BOX = "debian/bookworm64"
 ##
 
 ## Remove firewall
@@ -24,22 +23,14 @@ SHELL
 ##
 
 Vagrant.configure("2") do |config|
-  config.vm.box = BOX
-	config.vm.box_url = BOX_URL 
+  config.vm.box = BOX 
 	config.vm.box_check_update = false
   config.ssh.forward_agent = true
 
 	config.vm.provision "shell", inline: $DISABLE_FIREWALL_SCRIPT # Remove firewall
-
-  config.vbguest.installer_hooks[:before_install] = [ # Fix for CentOS 8 (adding vault.centos.org to yum repos)
-    'sudo sed -i -e "s|mirrorlist=|#mirrorlist=|g" /etc/yum.repos.d/CentOS-*',
-    'sudo sed -i -e "s|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g" /etc/yum.repos.d/CentOS-*'
-  ]
-
-	config.vbguest.installer_options = { allow_kernel_upgrade: true }
-
+  
   # Creation of each VM
-
+  
   config.vm.define SERVER_NODE_NAME do |server|
     server.vm.hostname = SERVER_NODE_NAME
     server.vm.network "private_network", ip: SERVER_NODE_IP
