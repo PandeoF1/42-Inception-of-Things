@@ -50,6 +50,6 @@ test:
 	@echo "Curl vers le serveur sans header"
 	@curl 192.168.56.110 --silent | grep APP
 
-re: destroy token up
+re: destroy clean token up
 
 .PHONY: help up status server stop destroy suspend token re restart
