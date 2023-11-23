@@ -8,7 +8,7 @@
 
 ## Config
 SERVER_NODE_NAME = "tnardS"
-SERVER_NODE_IP = "192.168.56.120" # 110
+SERVER_NODE_IP = "192.168.56.110"
 
 MEM = "2048"
 CPUS = "4" # (For 42 computers use only 1)
