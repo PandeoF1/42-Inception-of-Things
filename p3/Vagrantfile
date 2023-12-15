@@ -10,10 +10,10 @@
 SERVER_NODE_NAME = "tnardS"
 SERVER_NODE_IP = "192.168.56.110"
 
-MEM = "2048"
-CPUS = "4" # (For 42 computers use only 1)
+MEM = "4096"
+CPUS = "12" # (For 42 computers use only 1)
 
-BOX = "debian/bookworm64"
+BOX = "bento/debian-12"
 ##
 
 Vagrant.configure("2") do |config|
@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
 
       # Install K3d
       curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | sudo bash
-      sudo /usr/local/bin/k3d cluster create dev-cluster --port 8888:8888@loadbalancer
+      sudo /usr/local/bin/k3d cluster create dev-cluster --port 8888:8888@loadbalancer --port 8080:80@loadbalancer --agents 2
       
       # Install kubectl
       curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -54,20 +54,17 @@ Vagrant.configure("2") do |config|
       sudo /usr/local/bin/kubectl create namespace dev
 
       # Install Argo CD
-      sudo /usr/local/bin/kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      sudo /usr/local/bin/kubectl apply -n argocd -f /vagrant/confs/install.yaml
 
       ## Wait for Argo CD to be ready
-      sudo /usr/local/bin/kubectl rollout status deployment argocd-server -n argocd
-      sudo /usr/local/bin/kubectl rollout status deployment argocd-redis -n argocd
-      sudo /usr/local/bin/kubectl rollout status deployment argocd-repo-server -n argocd
-      sudo /usr/local/bin/kubectl rollout status deployment argocd-dex-server -n argocd 
+      sudo kubectl wait -n argocd --for=condition=Ready pods --all --timeout=600s
       ##
 
       sudo /usr/local/bin/kubectl apply -n argocd -f /vagrant/confs/wil.yaml
       sudo /usr/local/bin/kubectl wait --for=condition=Ready pods --all -n argocd
       sudo /usr/local/bin/kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d > /vagrant/pass
 
-      sudo /usr/local/bin/kubectl port-forward svc/argocd-server -n argocd 1053:443 --address='0.0.0.0'
+      #sudo /usr/local/bin/kubectl port-forward svc/argocd-server -n argocd 1053:443 --address='0.0.0.0'
     SHELL
   end
 

@@ -10,10 +10,10 @@
 SERVER_NODE_NAME = "tnardS"
 SERVER_NODE_IP = "192.168.56.110"
 
-MEM = "2048"
-CPUS = "4" # (For 42 computers use only 1)
+MEM = "4096"
+CPUS = "12" # (For 42 computers use only 1)
 
-BOX = "debian/bookworm64"
+BOX = "bento/debian-12"
 ##
 
 Vagrant.configure("2") do |config|
