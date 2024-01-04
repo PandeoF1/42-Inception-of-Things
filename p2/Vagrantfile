@@ -50,10 +50,10 @@ Vagrant.configure("2") do |config|
       for i in 1 2 3
       do
         echo "Deploying of app $i in progress.." 
-        /usr/local/bin/kubectl create configmap app$i.com --from-file /vagrant/confs/$i/index.html
-        /usr/local/bin/kubectl apply -f /vagrant/confs/$i/deployment.yaml
-        /usr/local/bin/kubectl apply -f /vagrant/confs/$i/service.yaml
-        /usr/local/bin/kubectl apply -f /vagrant/confs/$i/ingress.yaml
+        kubectl create configmap app$i.com --from-file /vagrant/confs/$i/index.html
+        kubectl apply -f /vagrant/confs/$i/deployment.yaml
+        kubectl apply -f /vagrant/confs/$i/service.yaml
+        kubectl apply -f /vagrant/confs/$i/ingress.yaml
       done
     SHELL
   end
