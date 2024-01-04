@@ -58,6 +58,7 @@ Vagrant.configure("2") do |config|
     serverworker.vm.provider "virtualbox" do |vb|
       vb.memory = MEM
       vb.cpus = CPUS
+      vb.name = WORKER_NODE_NAME
     end
     
     serverworker.vm.synced_folder ".", "/vagrant", type: "virtualbox" # Sync folder with host
