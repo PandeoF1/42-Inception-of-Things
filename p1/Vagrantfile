@@ -14,7 +14,7 @@ WORKER_NODE_NAME = "tnardSW"
 WORKER_NODE_IP = "192.168.56.111"
 
 MEM = "2048"
-CPUS = "8" # (For 42 computers use only 1)
+CPUS = "4" # (For 42 computers use only 1)
 
 BOX = "bento/debian-12"
 ##
@@ -33,6 +33,7 @@ Vagrant.configure("2") do |config|
     server.vm.provider "virtualbox" do |vb|
       vb.memory = MEM
       vb.cpus = CPUS
+      vb.name = SERVER_NODE_NAME
     end
 
     server.vm.synced_folder ".", "/vagrant", type: "virtualbox" # Sync folder with host
