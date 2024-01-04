@@ -9884,7 +9884,7 @@ spec:
       - command:
         - cp
         - -n
-        - argocd
+        - /usr/local/bin/argocd
         - /shared/argocd-dex
         image: quay.io/argoproj/argocd:v2.3.3
         imagePullPolicy: Always
@@ -10163,7 +10163,7 @@ spec:
       - command:
         - cp
         - -n
-        - argocd
+        - /usr/local/bin/argocd
         - /var/run/argocd/argocd-cmp-server
         image: quay.io/argoproj/argocd:v2.3.3
         name: copyutil
