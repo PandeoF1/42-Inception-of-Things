@@ -14,6 +14,10 @@
 	<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/PandeoF1/42-Inception-of-Things?color=brightgreen" />
 </p>
 
+## ATTENTION
+
+Inside argocd yaml at line 10240 there is some argument to permit ingress access via 80 http port
+
 ---
 
 ## (づ｡◕‿‿◕｡)づ :

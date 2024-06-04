@@ -10237,8 +10237,8 @@ spec:
       containers:
       - command:
         - argocd-server
-        - --insecure #custom here for ssl problems
-        - --rootpath #custom here for /argocd ingress path
+        - --insecure # FOR HTTPS REDIRECTION
+        - --rootpath # FOR /argocd INGRESS PATH
         - /argocd
         - --basehref
         - /argocd
